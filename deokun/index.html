@@ -1,0 +1,1297 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>영주와 용사들: 영토 확장기</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Noto+Serif+KR:wght@600;700;900&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-obsidian: #0b0e14;
+      --bg-panel: #131823;
+      --bg-card: #1b2232;
+      --border-iron: #2c364c;
+      --accent-gold: #d4af37;
+    }
+
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background-color: var(--bg-obsidian);
+      color: #e5e7eb;
+      background-image: radial-gradient(circle at 50% 0%, #1c2438 0%, #0b0e14 75%);
+      min-height: 100vh;
+    }
+
+    .font-serif-kr { font-family: 'Noto Serif KR', serif; }
+
+    .panel {
+      background-color: var(--bg-panel);
+      border: 1px solid var(--border-iron);
+      box-shadow: 0 10px 26px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(212, 175, 55, 0.12);
+    }
+
+    .card {
+      background-color: var(--bg-card);
+      border: 1px solid #2b354a;
+      transition: border-color 0.15s ease, transform 0.15s ease;
+    }
+    .card:hover { border-color: rgba(212, 175, 55, 0.45); }
+
+    .btn-iron {
+      background: linear-gradient(180deg, #283247 0%, #171e2d 100%);
+      border: 1px solid #475569;
+      color: #e2e8f0;
+      transition: all 0.15s ease;
+      cursor: pointer;
+    }
+    .btn-iron:hover:not(:disabled) {
+      border-color: var(--accent-gold);
+      color: #fef08a;
+      background: linear-gradient(180deg, #34415c 0%, #1f293d 100%);
+    }
+    .btn-iron:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .btn-gold {
+      background: linear-gradient(180deg, #d4af37 0%, #9b791b 100%);
+      border: 1px solid #fde047;
+      color: #0b0e14;
+      font-weight: 700;
+      box-shadow: 0 0 14px rgba(212, 175, 55, 0.25);
+      transition: all 0.15s ease;
+      cursor: pointer;
+    }
+    .btn-gold:hover:not(:disabled) { filter: brightness(1.1); }
+    .btn-gold:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .btn-crimson {
+      background: linear-gradient(180deg, #dc2626 0%, #991b1b 100%);
+      border: 1px solid #f87171;
+      color: #fef2f2;
+      font-weight: 700;
+      transition: all 0.15s ease;
+      cursor: pointer;
+    }
+    .btn-crimson:hover:not(:disabled) { filter: brightness(1.12); }
+    .btn-crimson:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .btn-emerald {
+      background: linear-gradient(180deg, #059669 0%, #065f46 100%);
+      border: 1px solid #34d399;
+      color: #ecfdf5;
+      font-weight: 700;
+      transition: all 0.15s ease;
+      cursor: pointer;
+    }
+    .btn-emerald:hover:not(:disabled) { filter: brightness(1.12); }
+    .btn-emerald:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .nav-tab {
+      border-left: 3px solid transparent;
+      transition: all 0.15s ease;
+      cursor: pointer;
+    }
+    .nav-tab.active {
+      background: linear-gradient(90deg, rgba(212, 175, 55, 0.2) 0%, rgba(19, 24, 35, 0) 100%);
+      border-left-color: var(--accent-gold);
+      color: #fef08a;
+      font-weight: 700;
+    }
+
+    @keyframes hitFlash {
+      0% { background-color: rgba(239, 68, 68, 0.55); transform: translateX(0); }
+      25% { transform: translateX(-4px); }
+      50% { transform: translateX(4px); }
+      100% { background-color: var(--bg-card); transform: translateX(0); }
+    }
+    .anim-hit { animation: hitFlash 0.35s ease; }
+
+    @keyframes healFlash {
+      0% { background-color: rgba(16, 185, 129, 0.45); }
+      100% { background-color: var(--bg-card); }
+    }
+    .anim-heal { animation: healFlash 0.4s ease; }
+
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #0d1119; }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #d4af37; }
+  </style>
+</head>
+<body class="p-2.5 sm:p-4 text-sm select-none">
+
+  <!-- =========================================================
+       1. 상단 상태 바 (Top Status Bar)
+  ========================================================== -->
+  <header class="panel rounded-xl p-3 mb-3">
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <div class="flex flex-wrap items-center gap-2.5">
+        <div class="flex items-center gap-2 mr-1">
+          <div class="w-9 h-9 rounded-lg bg-amber-500/15 border border-amber-400/50 flex items-center justify-center text-amber-300 text-lg font-serif-kr font-black">♛</div>
+          <div>
+            <h1 class="font-serif-kr font-bold text-base text-amber-200 leading-tight">영주와 용사들: 영토 확장기</h1>
+            <p class="text-[11px] text-slate-400">영구 사망 · 호감도 관리 · 자동 전투 영토 개척</p>
+          </div>
+        </div>
+
+        <span class="px-2.5 py-1 rounded-lg bg-slate-900 border border-amber-500/40 text-xs font-bold text-amber-200">
+          📅 <span id="ui-day">1</span>일차
+        </span>
+        <span class="px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-700 text-xs text-yellow-300 font-bold">
+          🪙 골드: <span id="ui-gold">300</span>G
+        </span>
+        <span class="px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-700 text-xs text-emerald-300 font-bold">
+          ✨ 명성: <span id="ui-fame">10</span>
+        </span>
+        <span class="px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-700 text-xs text-sky-300 font-bold">
+          🚩 최고 개척: <span id="ui-cleared">미개척</span>
+        </span>
+        <span class="px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-700 text-xs text-slate-200 font-bold">
+          🛡️ 보유 영웅: <span id="ui-hero-count">2</span>명
+        </span>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button id="btn-next-day" onclick="Game.nextDay()" class="btn-gold px-4 py-2 rounded-lg text-xs flex items-center gap-1.5">
+          <span>🌙 다음 날 (휴식 및 방문 갱신)</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- =========================================================
+       2. 몬스터 침략 경보 배너 (확률적 이벤트 발생 시 표시)
+  ========================================================== -->
+  <div id="invasion-banner" class="hidden mb-3 rounded-xl p-3.5 border-2 border-red-500 bg-gradient-to-r from-red-950/90 via-red-900/80 to-slate-950 shadow-lg">
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="px-2 py-0.5 rounded bg-red-600 text-white text-[11px] font-bold animate-pulse">🚨 몬스터 침략 경보!</span>
+          <strong id="inv-title" class="font-serif-kr text-base text-red-100">성벽 앞 몬스터 무리 출현</strong>
+        </div>
+        <p id="inv-desc" class="text-xs text-red-200/90 mt-1">방어 성공 시 사냥터보다 훨씬 큰 보상(2.5배 골드 및 대량 명성)을 획득합니다!</p>
+      </div>
+      <div class="flex flex-wrap items-center gap-2">
+        <button onclick="Battle.startInvasion()" class="btn-crimson px-4 py-2 rounded-lg text-xs">⚔️ 성벽 방어전 출격</button>
+        <button onclick="Game.ignoreInvasion()" class="btn-iron px-3 py-2 rounded-lg text-xs text-slate-300">🏳️ 성문 봉쇄 (약탈 허용)</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================
+       3. 메인 3단 레이아웃 (좌측 탭 / 중앙 뷰포트 / 우측 파티&로그)
+  ========================================================== -->
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-3">
+
+    <!-- 좌측 내비게이션 (2컬럼) -->
+    <aside class="lg:col-span-2 panel rounded-xl p-2 flex flex-col justify-between">
+      <div>
+        <div class="px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-800 mb-1.5">
+          영지 메뉴
+        </div>
+        <nav class="space-y-1">
+          <button class="nav-tab active w-full text-left px-2.5 py-2.5 rounded-lg text-xs flex items-center justify-between" data-tab="tab-castle">
+            <span>🏰 성 &amp; 영웅 관리</span>
+          </button>
+          <button class="nav-tab w-full text-left px-2.5 py-2.5 rounded-lg text-xs flex items-center justify-between" data-tab="tab-hunt">
+            <span>🗺️ 사냥터 (영토 확장)</span>
+          </button>
+          <button class="nav-tab w-full text-left px-2.5 py-2.5 rounded-lg text-xs flex items-center justify-between" data-tab="tab-tavern">
+            <span>🍺 주점 &amp; 방문객</span>
+            <span id="badge-visitor" class="hidden px-1.5 py-0.5 rounded-full bg-emerald-600 text-white text-[10px] font-bold">NEW</span>
+          </button>
+          <button class="nav-tab w-full text-left px-2.5 py-2.5 rounded-lg text-xs flex items-center justify-between" data-tab="tab-memorial">
+            <span>🪦 전사자 추모비</span>
+            <span id="badge-fallen" class="px-1.5 py-0.5 rounded-full bg-slate-800 text-slate-400 text-[10px] font-bold">0</span>
+          </button>
+        </nav>
+      </div>
+
+      <div class="mt-4 pt-3 border-t border-slate-800 px-2 text-[11px] text-slate-400 space-y-1">
+        <div class="font-bold text-amber-300/90">💡 영주 지침</div>
+        <p>• 체력이 0이 된 영웅은 <strong class="text-red-400">영구 사망</strong>합니다.</p>
+        <p>• 위험할 땐 <strong class="text-amber-300">긴급 철수</strong>로 목숨을 지키세요.</p>
+        <p>• <strong class="text-emerald-300">명성</strong>이 높을수록 4~5성 영웅이 찾아옵니다.</p>
+      </div>
+    </aside>
+
+    <!-- 중앙 메인 뷰포트 (7컬럼) -->
+    <main class="lg:col-span-7 panel rounded-xl p-4 min-h-[620px]">
+
+      <!-- 자동 전투 오버레이 뷰 (전투 중일 때 탭 대신 표시) -->
+      <section id="battle-view" class="hidden space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-2 pb-2.5 border-b border-slate-700">
+          <div>
+            <span id="bt-type-badge" class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 text-[11px] font-bold">사냥터 전투</span>
+            <h2 id="bt-title" class="font-serif-kr font-bold text-lg text-amber-100 mt-0.5">1-1 뒷산</h2>
+          </div>
+          <div class="flex items-center gap-2">
+            <button id="btn-speed" onclick="Battle.toggleSpeed()" class="btn-iron px-3 py-1.5 rounded-lg text-xs font-bold">⏩ 속도: 1x</button>
+            <button id="btn-retreat" onclick="Battle.retreat()" class="btn-crimson px-3.5 py-1.5 rounded-lg text-xs">🏃 긴급 철수 (생존 우선)</button>
+          </div>
+        </div>
+
+        <!-- 전장 양측 유닛 -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="space-y-2">
+            <div class="text-xs font-bold text-sky-300 flex justify-between">
+              <span>🛡️ 아군 원정 파티</span>
+              <span class="text-[11px] text-slate-400">HP 0 시 영구 사망!</span>
+            </div>
+            <div id="bt-allies" class="space-y-2"></div>
+          </div>
+
+          <div class="space-y-2">
+            <div class="text-xs font-bold text-red-300 flex justify-between">
+              <span>👹 적 몬스터 무리</span>
+              <span id="bt-round" class="text-[11px] text-slate-400">1라운드</span>
+            </div>
+            <div id="bt-enemies" class="space-y-2"></div>
+          </div>
+        </div>
+
+        <!-- 실시간 전투 로그 -->
+        <div class="bg-slate-950/90 border border-slate-800 rounded-xl p-3">
+          <div class="text-[11px] font-bold text-slate-400 mb-1.5">⚔️ 실시간 전투 기록</div>
+          <div id="bt-log" class="h-36 overflow-y-auto space-y-1 text-xs pr-1"></div>
+        </div>
+
+        <!-- 전투 종료 결과 버튼 -->
+        <div id="bt-footer" class="hidden pt-2 flex justify-end">
+          <button onclick="Battle.closeBattle()" class="btn-gold px-6 py-2.5 rounded-xl text-sm">성으로 귀환</button>
+        </div>
+      </section>
+
+      <!-- TAB 1: 성 & 영웅 관리 -->
+      <section id="tab-castle" class="tab-panel space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-2 pb-2.5 border-b border-slate-700">
+          <div>
+            <h2 class="font-serif-kr font-bold text-lg text-amber-200">🏰 성내 영웅 로스터 &amp; 파티 편성</h2>
+            <p class="text-xs text-slate-400">최대 4명을 원정 파티에 편성할 수 있습니다. 부상 치료와 호감도 관리에 신경 쓰세요.</p>
+          </div>
+          <button onclick="Game.healAllHeroes()" class="btn-emerald px-3 py-1.5 rounded-lg text-xs">💚 전원 치료 &amp; 휴식</button>
+        </div>
+        <div id="hero-list" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
+      </section>
+
+      <!-- TAB 2: 사냥터 (영토 확장) -->
+      <section id="tab-hunt" class="tab-panel hidden space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-2 pb-2.5 border-b border-slate-700">
+          <div>
+            <h2 class="font-serif-kr font-bold text-lg text-amber-200">🗺️ 성 밖 사냥터 (Stage 1 ~ 10 영토 확장)</h2>
+            <p class="text-xs text-slate-400">순차적으로 구역을 개척해 영토를 넓히세요. 최초 클리어 시 영토 확장 보너스 골드와 명성을 얻습니다.</p>
+          </div>
+        </div>
+
+        <!-- 스테이지 1~10 선택 버튼 -->
+        <div id="stage-selector" class="grid grid-cols-2 sm:grid-cols-5 gap-1.5"></div>
+
+        <!-- 선택된 스테이지의 -1 ~ -5 구역 목록 -->
+        <div id="substage-list" class="space-y-2.5"></div>
+      </section>
+
+      <!-- TAB 3: 주점 & 방문객 -->
+      <section id="tab-tavern" class="tab-panel hidden space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-2 pb-2.5 border-b border-slate-700">
+          <div>
+            <h2 class="font-serif-kr font-bold text-lg text-amber-200">🍺 성내 주점 &amp; 영웅 방문객</h2>
+            <p class="text-xs text-slate-400">주점에서는 1~3성 영웅을 골드로 구입할 수 있으며, 명성이 높으면 성문에 4~5성 영웅이 찾아옵니다.</p>
+          </div>
+          <button onclick="Game.refreshTavernPaid()" class="btn-iron px-3 py-1.5 rounded-lg text-xs">🔄 주점 목록 갱신 (30G)</button>
+        </div>
+
+        <!-- 명성 기반 방문객 -->
+        <div class="card rounded-xl p-3.5 border-emerald-500/40">
+          <div class="flex justify-between items-center mb-2">
+            <h3 class="font-bold text-emerald-300 text-sm">🚪 성문을 두드린 방문 영웅 (명성 영향)</h3>
+            <span id="fame-tier-hint" class="text-[11px] text-slate-400">현재 명성: 10 (높을수록 4~5성 방문 확률↑)</span>
+          </div>
+          <div id="visitor-list" class="grid grid-cols-1 md:grid-cols-2 gap-2.5"></div>
+        </div>
+
+        <!-- 주점 상시 구입 -->
+        <div class="card rounded-xl p-3.5">
+          <h3 class="font-bold text-amber-200 text-sm mb-2">🍻 주점 용병 고용 (1~3성 상시 구입)</h3>
+          <div id="tavern-list" class="grid grid-cols-1 md:grid-cols-3 gap-2.5"></div>
+        </div>
+      </section>
+
+      <!-- TAB 4: 전사자 추모비 -->
+      <section id="tab-memorial" class="tab-panel hidden space-y-4">
+        <div class="pb-2.5 border-b border-slate-700">
+          <h2 class="font-serif-kr font-bold text-lg text-slate-200">🪦 전사자 추모비 (영구 사망 기록)</h2>
+          <p class="text-xs text-slate-400">영토를 개척하고 성을 지키다 영원히 잠든 용사들의 기록입니다. 한 번 죽은 영웅은 돌아오지 않습니다.</p>
+        </div>
+        <div id="memorial-list" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
+      </section>
+
+    </main>
+
+    <!-- 우측 사이드바: 출격 파티 요약 + 실시간 연대기 로그 (3컬럼) -->
+    <aside class="lg:col-span-3 panel rounded-xl p-3 flex flex-col justify-between gap-3">
+      <div>
+        <div class="flex justify-between items-center border-b border-slate-700 pb-1.5 mb-2">
+          <h2 class="font-serif-kr font-bold text-sm text-amber-200">⚔️ 출격 파티 (<span id="ui-party-count">2</span>/4)</h2>
+          <span id="ui-party-power" class="text-[11px] text-sky-300 font-bold">전투력 0</span>
+        </div>
+        <div id="party-summary" class="space-y-1.5 mb-4"></div>
+
+        <div class="flex justify-between items-center border-b border-slate-700 pb-1.5 mb-2">
+          <h3 class="font-bold text-xs text-slate-300">📜 영지 연대기 로그</h3>
+          <button onclick="Game.clearLogs()" class="text-[11px] text-slate-500 hover:text-amber-300">비우기</button>
+        </div>
+        <div id="chronicle-log" class="h-[340px] overflow-y-auto space-y-1.5 pr-1 text-xs"></div>
+      </div>
+    </aside>
+
+  </div>
+
+  <script>
+    // =========================================================================
+    // 1. 마스터 데이터 (영웅 풀 1~5성, 사냥터 Stage 1~10)
+    // =========================================================================
+    const HERO_TEMPLATES = {
+      1: [
+        { name: "노련한 창잡이", role: "전사", hp: 95, atk: 14, def: 6, cost: 80 },
+        { name: "마을 민병대", role: "전사", hp: 105, atk: 12, def: 7, cost: 80 },
+        { name: "풋내기 궁수", role: "궁수", hp: 70, atk: 18, def: 3, cost: 90 }
+      ],
+      2: [
+        { name: "강철 방패병", role: "전사", hp: 155, atk: 19, def: 13, cost: 200 },
+        { name: "숲의 추적자", role: "궁수", hp: 110, atk: 28, def: 6, cost: 220 },
+        { name: "견습 마법사", role: "마법사", hp: 95, atk: 33, def: 4, cost: 230 }
+      ],
+      3: [
+        { name: "뛰어난 검사", role: "전사", hp: 230, atk: 36, def: 18, cost: 480 },
+        { name: "백발백중 명사수", role: "궁수", hp: 165, atk: 48, def: 10, cost: 500 },
+        { name: "고위 사제", role: "사제", hp: 175, atk: 30, def: 12, cost: 520 }
+      ],
+      4: [
+        { name: "'붉은 송곳니' 카르만", role: "전사", hp: 360, atk: 62, def: 26, cost: 900 },
+        { name: "'서리바람' 엘레나", role: "마법사", hp: 250, atk: 84, def: 15, cost: 950 },
+        { name: "'철벽의' 보르그", role: "전사", hp: 460, atk: 48, def: 38, cost: 920 }
+      ],
+      5: [
+        { name: "'태양의 검성' 아서", role: "전사", hp: 580, atk: 108, def: 44, cost: 1600 },
+        { name: "'별빛 대현자' 리아", role: "마법사", hp: 410, atk: 138, def: 28, cost: 1650 },
+        { name: "'심연의 사냥꾼' 카인", role: "궁수", hp: 440, atk: 128, def: 32, cost: 1620 }
+      ]
+    };
+
+    const STAGES = [
+      { stage: 1, name: "뒷산", monsters: ["슬라임", "멧돼지", "굶주린 들개"] },
+      { stage: 2, name: "안개 낀 자작나무 숲", monsters: ["고블린 약탈자", "거대 숲거미"] },
+      { stage: 3, name: "버려진 채석장", monsters: ["코볼트 광부", "바위 골렘"] },
+      { stage: 4, name: "핏빛 늪지대", monsters: ["독개구리", "리자드맨 전사"] },
+      { stage: 5, name: "고대인의 폐허", monsters: ["스켈레톤 기사", "저주받은 망령"] },
+      { stage: 6, name: "서리 송곳니 협곡", monsters: ["얼음 늑대", "설인 예티"] },
+      { stage: 7, name: "검은 화산 지대", monsters: ["화염 정령", "용암 살라만더"] },
+      { stage: 8, name: "망각의 성채 외곽", monsters: ["가고일", "타락한 기사단"] },
+      { stage: 9, name: "용의 무덤", monsters: ["와이번", "본 드래곤"] },
+      { stage: 10, name: "태초의 심연", monsters: ["고대 마수", "심연의 수호자"] }
+    ];
+
+    const STAR_COLORS = {
+      1: "text-slate-300 border-slate-600 bg-slate-800/80",
+      2: "text-emerald-300 border-emerald-600/60 bg-emerald-950/70",
+      3: "text-sky-300 border-sky-500/60 bg-sky-950/70",
+      4: "text-purple-300 border-purple-500/70 bg-purple-950/80",
+      5: "text-amber-300 border-amber-400 bg-amber-950/80"
+    };
+
+    // =========================================================================
+    // 2. 게임 상태 (Game State)
+    // =========================================================================
+    const State = {
+      day: 1,
+      gold: 300,
+      fame: 10,
+      highestClearedIdx: -1, // 0 = 1-1, 49 = 10-5
+      selectedStage: 1,
+      activeTab: "tab-castle",
+      nextHeroUid: 1,
+      heroes: [],
+      fallenHeroes: [],
+      tavernPool: [],
+      visitors: [],
+      invasion: null, // { stageIdx, title, goldReward, fameReward, enemies }
+      logs: []
+    };
+
+    // =========================================================================
+    // 3. 핵심 게임 로직 (Game)
+    // =========================================================================
+    const Game = {
+      init() {
+        // 초기 1성 영웅 2명 지급 및 파티 편성
+        const h1 = this.createHero(1, HERO_TEMPLATES[1][0], true); // 노련한 창잡이
+        const h2 = this.createHero(1, HERO_TEMPLATES[1][2], true); // 풋내기 궁수
+        State.heroes.push(h1, h2);
+
+        this.refreshTavern();
+        this.generateVisitors(true);
+        this.addLog("🏰 영주님, 성에 부임하신 것을 환영합니다! 우선 [사냥터]에서 '1-1 뒷산'을 개척해 영토를 넓히세요.", "gold");
+        UI.renderAll();
+      },
+
+      createHero(star, tpl, inParty = false) {
+        return {
+          id: State.nextHeroUid++,
+          star,
+          name: tpl.name,
+          role: tpl.role,
+          level: 1,
+          exp: 0,
+          maxExp: 50 * star,
+          hp: tpl.hp,
+          maxHp: tpl.hp,
+          atk: tpl.atk,
+          def: tpl.def,
+          affection: 75,
+          inParty
+        };
+      },
+
+      stageIdxToLabel(idx) {
+        if (idx < 0) return "미개척";
+        const s = Math.floor(idx / 5) + 1;
+        const sub = (idx % 5) + 1;
+        return `${s}-${sub} ${STAGES[s - 1].name}`;
+      },
+
+      addLog(msg, type = "normal") {
+        State.logs.unshift({ day: State.day, msg, type });
+        if (State.logs.length > 70) State.logs.pop();
+      },
+
+      clearLogs() {
+        State.logs = [];
+        UI.renderLogs();
+      },
+
+      // 다음 날 (휴식, 소량 자연회복, 주점/방문객 갱신, 침략 확률 체크)
+      nextDay() {
+        if (Battle.active) return;
+        State.day += 1;
+
+        // 성내 휴식 소량 회복 (+20% HP)
+        State.heroes.forEach(h => {
+          h.hp = Math.min(h.maxHp, h.hp + Math.ceil(h.maxHp * 0.2));
+        });
+
+        this.refreshTavern();
+        this.generateVisitors(false);
+        this.addLog(`🌙 ${State.day}일차 아침이 밝았습니다. 성내 영웅들이 휴식으로 체력을 20% 회복했습니다.`);
+
+        // 확률적 몬스터 침략 (28%)
+        if (!State.invasion && Math.random() < 0.28) {
+          this.triggerInvasion();
+        }
+
+        UI.renderAll();
+      },
+
+      // 주점 1~3성 갱신
+      refreshTavern() {
+        State.tavernPool = [];
+        for (let i = 0; i < 3; i++) {
+          const r = Math.random();
+          const star = r < 0.55 ? 1 : (r < 0.88 ? 2 : 3);
+          const list = HERO_TEMPLATES[star];
+          const tpl = list[Math.floor(Math.random() * list.length)];
+          State.tavernPool.push({ star, tpl, cost: tpl.cost, bought: false });
+        }
+      },
+
+      refreshTavernPaid() {
+        if (State.gold < 30) {
+          this.addLog("⚠️ 주점 목록을 갱신하려면 30G가 필요합니다.", "warn");
+          UI.renderLogs();
+          return;
+        }
+        State.gold -= 30;
+        this.refreshTavern();
+        this.addLog("🍺 주점 용병 목록을 새로 갱신했습니다 (-30G).");
+        UI.renderAll();
+      },
+
+      buyTavernHero(idx) {
+        const item = State.tavernPool[idx];
+        if (!item || item.bought) return;
+        if (State.gold < item.cost) {
+          this.addLog(`⚠️ 골드가 부족합니다! (${item.cost}G 필요)`, "warn");
+          UI.renderLogs();
+          return;
+        }
+        State.gold -= item.cost;
+        item.bought = true;
+        const partyCount = State.heroes.filter(h => h.inParty).length;
+        const hero = this.createHero(item.star, item.tpl, partyCount < 4);
+        State.heroes.push(hero);
+        this.addLog(`🤝 주점에서 [${item.star}성] ${hero.name}을(를) 고용했습니다! (-${item.cost}G)`, "emerald");
+        UI.renderAll();
+      },
+
+      // 명성 기반 랜덤 방문 영웅 생성
+      generateVisitors(isInit = false) {
+        State.visitors = [];
+        const fame = State.fame;
+        // 방문 확률: 기본 55% + 명성 비례
+        const visitChance = isInit ? 1.0 : Math.min(0.95, 0.5 + fame * 0.002);
+        if (Math.random() > visitChance) return;
+
+        const count = fame >= 120 && Math.random() < 0.45 ? 2 : 1;
+        for (let i = 0; i < count; i++) {
+          let star = 1;
+          const roll = Math.random() * 100;
+          if (fame >= 250 && roll < 18) star = 5;
+          else if (fame >= 120 && roll < 35) star = 4;
+          else if (fame >= 45 && roll < 55) star = 3;
+          else if (roll < 75) star = 2;
+          else star = 1;
+
+          const list = HERO_TEMPLATES[star];
+          const tpl = list[Math.floor(Math.random() * list.length)];
+          // 방문 영웅은 무료 합류 또는 소액 계약금
+          const signingBonus = star >= 4 ? Math.round(tpl.cost * 0.25) : 0;
+          State.visitors.push({ star, tpl, signingBonus, recruited: false });
+        }
+
+        if (!isInit && State.visitors.length > 0) {
+          const top = State.visitors[0];
+          this.addLog(`🚪 명성을 듣고 [${top.star}성] ${top.tpl.name}이(가) 성문을 두드렸습니다! [주점 & 방문객]에서 확인하세요.`, "emerald");
+        }
+      },
+
+      acceptVisitor(idx) {
+        const v = State.visitors[idx];
+        if (!v || v.recruited) return;
+        if (State.gold < v.signingBonus) {
+          this.addLog(`⚠️ 계약금 ${v.signingBonus}G가 부족합니다.`, "warn");
+          UI.renderLogs();
+          return;
+        }
+        State.gold -= v.signingBonus;
+        v.recruited = true;
+        const partyCount = State.heroes.filter(h => h.inParty).length;
+        const hero = this.createHero(v.star, v.tpl, partyCount < 4);
+        State.heroes.push(hero);
+        this.addLog(`🎉 방문 영웅 [${v.star}성] ${hero.name}이(가) 영주님의 휘하에 합류했습니다!`, "emerald");
+        UI.renderAll();
+      },
+
+      toggleParty(heroId) {
+        const h = State.heroes.find(x => x.id === heroId);
+        if (!h) return;
+        if (h.inParty) {
+          h.inParty = false;
+        } else {
+          if (State.heroes.filter(x => x.inParty).length >= 4) {
+            this.addLog("⚠️ 원정 파티는 최대 4명까지 편성할 수 있습니다.", "warn");
+            UI.renderLogs();
+            return;
+          }
+          h.inParty = true;
+        }
+        UI.renderAll();
+      },
+
+      healHero(heroId) {
+        const h = State.heroes.find(x => x.id === heroId);
+        if (!h || h.hp >= h.maxHp) return;
+        const missing = h.maxHp - h.hp;
+        const cost = Math.max(15, Math.ceil(missing * 0.35));
+        if (State.gold < cost) {
+          this.addLog(`⚠️ 치료 비용(${cost}G)이 부족합니다.`, "warn");
+          UI.renderLogs();
+          return;
+        }
+        State.gold -= cost;
+        h.hp = h.maxHp;
+        h.affection = Math.min(100, h.affection + 5);
+        this.addLog(`💚 ${h.name}을(를) 완치시켰습니다 (-${cost}G, 호감도 +5).`, "emerald");
+        UI.renderAll();
+      },
+
+      healAllHeroes() {
+        let totalCost = 0;
+        const injured = State.heroes.filter(h => h.hp < h.maxHp);
+        if (injured.length === 0) {
+          this.addLog("ℹ️ 모든 영웅의 체력이 가득 차 있습니다.");
+          UI.renderLogs();
+          return;
+        }
+        injured.forEach(h => {
+          totalCost += Math.max(15, Math.ceil((h.maxHp - h.hp) * 0.35));
+        });
+        if (State.gold < totalCost) {
+          this.addLog(`⚠️ 전원 치료 비용(${totalCost}G)이 부족합니다.`, "warn");
+          UI.renderLogs();
+          return;
+        }
+        State.gold -= totalCost;
+        injured.forEach(h => {
+          h.hp = h.maxHp;
+          h.affection = Math.min(100, h.affection + 4);
+        });
+        this.addLog(`💚 부상당한 영웅 ${injured.length}명을 모두 치료했습니다 (-${totalCost}G).`, "emerald");
+        UI.renderAll();
+      },
+
+      giftHero(heroId) {
+        const h = State.heroes.find(x => x.id === heroId);
+        if (!h) return;
+        const cost = 40 * h.star;
+        if (State.gold < cost) {
+          this.addLog(`⚠️ 연회/선물 비용(${cost}G)이 부족합니다.`, "warn");
+          UI.renderLogs();
+          return;
+        }
+        State.gold -= cost;
+        h.affection = Math.min(100, h.affection + 22);
+        this.addLog(`🍷 ${h.name}에게 연회와 선물을 베풀었습니다 (-${cost}G, 호감도 ${h.affection}).`, "gold");
+        UI.renderAll();
+      },
+
+      // 호감도 변동 및 0 도달 시 이탈 처리
+      changeAffection(hero, delta, reason = "") {
+        hero.affection = Math.max(0, Math.min(100, hero.affection + delta));
+        if (hero.affection <= 0) {
+          State.heroes = State.heroes.filter(x => x.id !== hero.id);
+          this.addLog(`💔 [영웅 이탈] ${hero.name}이(가) 호감도 바닥(${reason})으로 실망하여 성을 영원히 떠났습니다!`, "danger");
+        }
+      },
+
+      // 몬스터 침략 이벤트 생성
+      triggerInvasion() {
+        const refIdx = Math.max(0, State.highestClearedIdx);
+        const stageNum = Math.floor(refIdx / 5) + 1;
+        const subNum = (refIdx % 5) + 1;
+        const stageData = STAGES[stageNum - 1];
+
+        const baseGold = Math.round((45 + refIdx * 28) * 2.5);
+        const baseFame = Math.round((12 + refIdx * 5) * 2.2);
+
+        State.invasion = {
+          stageIdx: refIdx,
+          title: `[${stageData.name}] 몬스터 약탈대 성벽 침공!`,
+          goldReward: baseGold,
+          fameReward: baseFame,
+          stageNum,
+          subNum
+        };
+        this.addLog(`🚨 [몬스터 침략 경보!] ${State.invasion.title} 방어 성공 시 ${baseGold}G, 명성 +${baseFame}!`, "danger");
+      },
+
+      ignoreInvasion() {
+        if (!State.invasion) return;
+        const lostGold = Math.min(State.gold, Math.round(State.invasion.goldReward * 0.35));
+        State.gold -= lostGold;
+        State.fame = Math.max(0, State.fame - 15);
+        State.invasion = null;
+        this.addLog(`🏳️ 성문을 봉쇄해 약탈을 허용했습니다. (-${lostGold}G, 명성 -15, 전 영웅 호감도 -15)`, "danger");
+        [...State.heroes].forEach(h => this.changeAffection(h, -15, "침략 방어 포기"));
+        UI.renderAll();
+      }
+    };
+
+    // =========================================================================
+    // 4. 자동 전투 엔진 (Battle) - 틱 기반, 영구 사망, 긴급 철수
+    // =========================================================================
+    const Battle = {
+      active: false,
+      timer: null,
+      speed: 1,
+      mode: "HUNT", // 'HUNT' | 'INVASION'
+      stageIdx: 0,
+      round: 1,
+      allies: [],
+      enemies: [],
+      logs: [],
+
+      buildEnemies(stageIdx, isInvasion = false) {
+        const sNum = Math.floor(stageIdx / 5) + 1;
+        const subNum = (stageIdx % 5) + 1;
+        const st = STAGES[sNum - 1];
+        const count = subNum === 5 ? 3 : (isInvasion ? 3 : 2 + (subNum >= 3 ? 1 : 0));
+        const scale = Math.pow(1.32, sNum - 1) * (1 + (subNum - 1) * 0.16) * (isInvasion ? 1.12 : 1.0);
+
+        const list = [];
+        for (let i = 0; i < count; i++) {
+          const isBoss = (subNum === 5 && i === 0) || (isInvasion && i === 0);
+          const baseName = st.monsters[i % st.monsters.length];
+          const name = isBoss ? `👑 우두머리 ${baseName}` : baseName;
+          const hp = Math.round((55 * scale) * (isBoss ? 1.65 : 1.0));
+          const atk = Math.round((11 * scale) * (isBoss ? 1.25 : 1.0));
+          const def = Math.round((3 * scale) * (isBoss ? 1.2 : 1.0));
+          list.push({ id: "e_" + i, name, hp, maxHp: hp, atk, def, isBoss });
+        }
+        return list;
+      },
+
+      startHunt(stageIdx) {
+        if (this.active) return;
+        const party = State.heroes.filter(h => h.inParty);
+        if (party.length === 0) {
+          Game.addLog("⚠️ 출격할 영웅이 없습니다! [성 & 영웅 관리]에서 파티를 편성하세요.", "warn");
+          UI.renderLogs();
+          return;
+        }
+
+        // 부상 상태로 무리하게 출격 시 호감도 하락
+        party.forEach(h => {
+          if (h.hp < h.maxHp * 0.5) {
+            Game.changeAffection(h, -8, "부상 중 강제 출격");
+          }
+        });
+
+        const aliveParty = State.heroes.filter(h => h.inParty);
+        if (aliveParty.length === 0) {
+          UI.renderAll();
+          return;
+        }
+
+        this.mode = "HUNT";
+        this.stageIdx = stageIdx;
+        this.beginBattle(aliveParty, this.buildEnemies(stageIdx, false), Game.stageIdxToLabel(stageIdx));
+      },
+
+      startInvasion() {
+        if (this.active || !State.invasion) return;
+        const party = State.heroes.filter(h => h.inParty);
+        if (party.length === 0) {
+          Game.addLog("⚠️ 성벽을 지킬 파티 영웅이 없습니다! 영웅을 파티에 편성하세요.", "warn");
+          UI.renderLogs();
+          return;
+        }
+        this.mode = "INVASION";
+        this.stageIdx = State.invasion.stageIdx;
+        this.beginBattle(party, this.buildEnemies(this.stageIdx, true), State.invasion.title);
+      },
+
+      beginBattle(party, enemies, title) {
+        this.active = true;
+        this.round = 1;
+        this.allies = party;
+        this.enemies = enemies;
+        this.logs = [`⚔️ [${title}] 자동 전투가 시작되었습니다!`];
+
+        document.querySelectorAll(".tab-panel").forEach(p => p.classList.add("hidden"));
+        document.getElementById("battle-view").classList.remove("hidden");
+        document.getElementById("bt-footer").classList.add("hidden");
+        document.getElementById("btn-retreat").disabled = false;
+        document.getElementById("btn-next-day").disabled = true;
+
+        const badge = document.getElementById("bt-type-badge");
+        if (this.mode === "INVASION") {
+          badge.textContent = "🚨 성벽 방어전 (고보상)";
+          badge.className = "px-2 py-0.5 rounded bg-red-600 text-white text-[11px] font-bold";
+        } else {
+          badge.textContent = "🗺️ 영토 확장 사냥터";
+          badge.className = "px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 text-[11px] font-bold";
+        }
+        document.getElementById("bt-title").textContent = title;
+
+        this.renderBattle();
+        this.scheduleTick();
+      },
+
+      scheduleTick() {
+        clearTimeout(this.timer);
+        if (!this.active) return;
+        this.timer = setTimeout(() => this.tick(), this.speed === 1 ? 620 : 280);
+      },
+
+      toggleSpeed() {
+        this.speed = this.speed === 1 ? 2 : 1;
+        document.getElementById("btn-speed").textContent = `⏩ 속도: ${this.speed}x`;
+      },
+
+      tick() {
+        if (!this.active) return;
+
+        const aliveAllies = this.allies.filter(h => h.hp > 0);
+        const aliveEnemies = this.enemies.filter(e => e.hp > 0);
+
+        if (aliveAllies.length === 0) {
+          this.finishBattle(false);
+          return;
+        }
+        if (aliveEnemies.length === 0) {
+          this.finishBattle(true);
+          return;
+        }
+
+        const hitIds = new Set();
+        const healIds = new Set();
+
+        // 1. 아군 턴
+        for (const h of aliveAllies) {
+          const targets = this.enemies.filter(e => e.hp > 0);
+          if (targets.length === 0) break;
+
+          // 사제는 부상 아군 치유 우선
+          if (h.role === "사제") {
+            const injured = this.allies.filter(a => a.hp > 0 && a.hp < a.maxHp).sort((a, b) => (a.hp / a.maxHp) - (b.hp / b.maxHp))[0];
+            if (injured) {
+              const healAmt = Math.round(h.atk * 1.15);
+              injured.hp = Math.min(injured.maxHp, injured.hp + healAmt);
+              healIds.add("a_" + injured.id);
+              this.pushLog(`💚 ${h.name}의 치유 → ${injured.name} HP +${healAmt}`);
+              continue;
+            }
+          }
+
+          const target = targets[0];
+          const isCrit = h.role === "궁수" && Math.random() < 0.25;
+          const raw = h.atk * (isCrit ? 1.55 : 1.0) * (0.9 + Math.random() * 0.2);
+          const dmg = Math.max(1, Math.round(raw - target.def * 0.45));
+          target.hp = Math.max(0, target.hp - dmg);
+          hitIds.add(target.id);
+          this.pushLog(`⚔️ ${h.name}의 공격 → ${target.name}에게 ${dmg} 피해${isCrit ? " (치명타!)" : ""}`);
+        }
+
+        // 2. 적군 턴
+        const remainingEnemies = this.enemies.filter(e => e.hp > 0);
+        for (const e of remainingEnemies) {
+          const targets = this.allies.filter(a => a.hp > 0);
+          if (targets.length === 0) break;
+
+          // 전사 역할이 앞열 어그로 우선
+          const warriors = targets.filter(a => a.role === "전사");
+          const target = warriors.length > 0 && Math.random() < 0.72
+            ? warriors[Math.floor(Math.random() * warriors.length)]
+            : targets[Math.floor(Math.random() * targets.length)];
+
+          const raw = e.atk * (0.9 + Math.random() * 0.2);
+          const dmg = Math.max(1, Math.round(raw - target.def * 0.55));
+          target.hp = Math.max(0, target.hp - dmg);
+          hitIds.add("a_" + target.id);
+          this.pushLog(`🩸 ${e.name}의 공격 → ${target.name}에게 ${dmg} 피해!`);
+
+          // 영구 사망 판정!
+          if (target.hp <= 0) {
+            this.handlePermadeath(target, e.name);
+          }
+        }
+
+        this.round += 1;
+        this.renderBattle(hitIds, healIds);
+
+        if (this.enemies.every(e => e.hp <= 0)) {
+          this.finishBattle(true);
+        } else if (this.allies.every(a => a.hp <= 0)) {
+          this.finishBattle(false);
+        } else {
+          this.scheduleTick();
+        }
+      },
+
+      handlePermadeath(hero, killerName) {
+        // 로스터에서 영구 삭제 및 추모비 등록
+        State.heroes = State.heroes.filter(x => x.id !== hero.id);
+        State.fallenHeroes.unshift({
+          name: hero.name,
+          star: hero.star,
+          role: hero.role,
+          level: hero.level,
+          day: State.day,
+          cause: `${killerName}에게 전사`
+        });
+
+        this.pushLog(`🪦 [영구 사망] ${hero.name}이(가) 전장에서 영원히 쓰러졌습니다...`);
+        Game.addLog(`🪦 [영구 사망] [${hero.star}성] ${hero.name}(Lv.${hero.level})이(가) ${killerName}에게 전사했습니다.`, "danger");
+
+        // 동료 사망 목격으로 생존 파티원 호감도 하락
+        this.allies.filter(a => a.hp > 0).forEach(survivor => {
+          Game.changeAffection(survivor, -15, "동료의 전사 목격");
+        });
+      },
+
+      retreat() {
+        if (!this.active) return;
+        clearTimeout(this.timer);
+        this.active = false;
+        document.getElementById("btn-retreat").disabled = true;
+        document.getElementById("bt-footer").classList.remove("hidden");
+
+        this.pushLog("🏃 [긴급 철수] 생존한 영웅들을 데리고 무사히 후퇴했습니다!");
+        Game.addLog("🏃 전장에서 긴급 철수하여 영웅들의 목숨을 지켰습니다.", "warn");
+        this.renderBattle();
+      },
+
+      finishBattle(victory) {
+        clearTimeout(this.timer);
+        this.active = false;
+        document.getElementById("btn-retreat").disabled = true;
+        document.getElementById("bt-footer").classList.remove("hidden");
+
+        if (victory) {
+          let goldGain = 0;
+          let fameGain = 0;
+          let expGain = 24 + this.stageIdx * 12;
+
+          if (this.mode === "INVASION" && State.invasion) {
+            goldGain = State.invasion.goldReward;
+            fameGain = State.invasion.fameReward;
+            State.invasion = null;
+            this.pushLog(`👑 [성벽 방어 대성공!] 골드 +${goldGain}G, 명성 +${fameGain} 획득!`);
+            Game.addLog(`👑 몬스터 침략 방어 성공! 막대한 보상(+${goldGain}G, 명성 +${fameGain})을 얻었습니다!`, "gold");
+          } else {
+            goldGain = 45 + this.stageIdx * 26;
+            fameGain = 5 + Math.floor(this.stageIdx / 2);
+            const isFirstClear = this.stageIdx > State.highestClearedIdx;
+            if (isFirstClear) {
+              State.highestClearedIdx = this.stageIdx;
+              const bonusGold = Math.round(goldGain * 0.8);
+              const bonusFame = 10 + Math.floor(this.stageIdx / 2) * 3;
+              goldGain += bonusGold;
+              fameGain += bonusFame;
+              this.pushLog(`🚩 [최초 개척 보너스!] 영토 확장 완료! 총 +${goldGain}G, 명성 +${fameGain}!`);
+              Game.addLog(`🚩 '${Game.stageIdxToLabel(this.stageIdx)}' 최초 개척 성공! (+${goldGain}G, 명성 +${fameGain})`, "gold");
+            } else {
+              this.pushLog(`✅ [전투 승리!] 골드 +${goldGain}G, 명성 +${fameGain} 획득!`);
+              Game.addLog(`⚔️ '${Game.stageIdxToLabel(this.stageIdx)}' 토벌 완료 (+${goldGain}G, 명성 +${fameGain}).`);
+            }
+          }
+
+          State.gold += goldGain;
+          State.fame += fameGain;
+
+          // 생존 파티원 경험치 및 레벨업
+          this.allies.filter(a => a.hp > 0).forEach(h => {
+            h.exp += expGain;
+            h.affection = Math.min(100, h.affection + 3);
+            while (h.exp >= h.maxExp) {
+              h.exp -= h.maxExp;
+              h.level += 1;
+              h.maxExp = Math.round(h.maxExp * 1.45);
+              h.maxHp = Math.round(h.maxHp * 1.15);
+              h.hp = Math.min(h.maxHp, h.hp + Math.round(h.maxHp * 0.25));
+              h.atk = Math.round(h.atk * 1.14);
+              h.def = Math.round(h.def * 1.12);
+              this.pushLog(`⬆️ [레벨업!] ${h.name}이(가) Lv.${h.level}로 성장했습니다!`);
+            }
+          });
+
+          // 승리 후 확률적으로 몬스터 침략(25%) 또는 방문 영웅(35%) 발생
+          if (this.mode === "HUNT" && !State.invasion && Math.random() < 0.25) {
+            Game.triggerInvasion();
+          }
+          if (Math.random() < 0.35) {
+            Game.generateVisitors(false);
+          }
+        } else {
+          this.pushLog("💀 [전투 패배] 출전한 원정대가 전멸했습니다...");
+          Game.addLog("💀 원정대가 전멸하여 패배했습니다.", "danger");
+          if (this.mode === "INVASION") {
+            Game.ignoreInvasion();
+          }
+        }
+
+        this.renderBattle();
+        UI.renderHeaderAndSidebar();
+      },
+
+      closeBattle() {
+        document.getElementById("battle-view").classList.add("hidden");
+        document.getElementById("btn-next-day").disabled = false;
+        UI.switchTab(State.activeTab);
+      },
+
+      pushLog(msg) {
+        this.logs.unshift(msg);
+        if (this.logs.length > 40) this.logs.pop();
+      },
+
+      renderBattle(hitIds = new Set(), healIds = new Set()) {
+        document.getElementById("bt-round").textContent = `${this.round}라운드`;
+
+        document.getElementById("bt-allies").innerHTML = this.allies.map(h => {
+          const pct = Math.max(0, Math.round((h.hp / h.maxHp) * 100));
+          const dead = h.hp <= 0;
+          const anim = hitIds.has("a_" + h.id) ? "anim-hit" : (healIds.has("a_" + h.id) ? "anim-heal" : "");
+          return `
+            <div class="card rounded-lg p-2.5 ${dead ? "opacity-40 border-red-900" : ""} ${anim}">
+              <div class="flex justify-between items-center text-xs mb-1">
+                <span class="font-bold ${dead ? "line-through text-red-400" : "text-amber-100"}">${"★".repeat(h.star)} ${h.name} <span class="text-slate-400 font-normal">Lv.${h.level}</span></span>
+                <span class="text-[11px] font-bold ${pct < 30 ? "text-red-400" : "text-emerald-300"}">${dead ? "전사 (영구사망)" : `${h.hp} / ${h.maxHp}`}</span>
+              </div>
+              <div class="w-full h-2 bg-slate-950 rounded-full overflow-hidden">
+                <div class="h-full ${pct < 30 ? "bg-red-500" : "bg-emerald-500"} transition-all duration-200" style="width:${pct}%"></div>
+              </div>
+            </div>
+          `;
+        }).join("");
+
+        document.getElementById("bt-enemies").innerHTML = this.enemies.map(e => {
+          const pct = Math.max(0, Math.round((e.hp / e.maxHp) * 100));
+          const dead = e.hp <= 0;
+          const anim = hitIds.has(e.id) ? "anim-hit" : "";
+          return `
+            <div class="card rounded-lg p-2.5 ${dead ? "opacity-35" : ""} ${anim}">
+              <div class="flex justify-between items-center text-xs mb-1">
+                <span class="font-bold ${e.isBoss ? "text-red-300" : "text-slate-200"}">${e.name}</span>
+                <span class="text-[11px] font-bold text-red-300">${dead ? "처치됨" : `${e.hp} / ${e.maxHp}`}</span>
+              </div>
+              <div class="w-full h-2 bg-slate-950 rounded-full overflow-hidden">
+                <div class="h-full bg-red-600 transition-all duration-200" style="width:${pct}%"></div>
+              </div>
+            </div>
+          `;
+        }).join("");
+
+        document.getElementById("bt-log").innerHTML = this.logs.map(l => `<div class="text-slate-300">${l}</div>`).join("");
+      }
+    };
+
+    // =========================================================================
+    // 5. UI 렌더러 (UI)
+    // =========================================================================
+    const UI = {
+      switchTab(tabId) {
+        if (Battle.active) return;
+        State.activeTab = tabId;
+        document.querySelectorAll(".nav-tab").forEach(b => b.classList.toggle("active", b.dataset.tab === tabId));
+        document.querySelectorAll(".tab-panel").forEach(p => p.classList.toggle("hidden", p.id !== tabId));
+        this.renderAll();
+      },
+
+      renderAll() {
+        this.renderHeaderAndSidebar();
+        this.renderCastleTab();
+        this.renderHuntTab();
+        this.renderTavernTab();
+        this.renderMemorialTab();
+      },
+
+      renderHeaderAndSidebar() {
+        document.getElementById("ui-day").textContent = State.day;
+        document.getElementById("ui-gold").textContent = State.gold.toLocaleString();
+        document.getElementById("ui-fame").textContent = State.fame.toLocaleString();
+        document.getElementById("ui-cleared").textContent = Game.stageIdxToLabel(State.highestClearedIdx);
+        document.getElementById("ui-hero-count").textContent = State.heroes.length;
+
+        // 침략 배너
+        const invBanner = document.getElementById("invasion-banner");
+        if (State.invasion) {
+          invBanner.classList.remove("hidden");
+          document.getElementById("inv-title").textContent = State.invasion.title;
+          document.getElementById("inv-desc").textContent = `방어 성공 시 골드 +${State.invasion.goldReward}G, 명성 +${State.invasion.fameReward} 획득! (방치 시 약탈 및 호감도 하락)`;
+        } else {
+          invBanner.classList.add("hidden");
+        }
+
+        // 좌측 배지
+        const hasVisitor = State.visitors.some(v => !v.recruited);
+        document.getElementById("badge-visitor").classList.toggle("hidden", !hasVisitor);
+        document.getElementById("badge-fallen").textContent = State.fallenHeroes.length;
+
+        // 우측 파티 요약
+        const party = State.heroes.filter(h => h.inParty);
+        document.getElementById("ui-party-count").textContent = party.length;
+        const pwr = party.reduce((s, h) => s + h.atk * 3 + h.def * 2 + Math.round(h.maxHp * 0.4), 0);
+        document.getElementById("ui-party-power").textContent = `전투력 ${pwr.toLocaleString()}`;
+
+        document.getElementById("party-summary").innerHTML = party.length === 0
+          ? `<div class="text-xs text-slate-500 p-2 bg-slate-900/70 rounded-lg">파티에 편성된 영웅이 없습니다.</div>`
+          : party.map(h => {
+              const hpPct = Math.round((h.hp / h.maxHp) * 100);
+              return `
+                <div class="p-2 rounded-lg bg-slate-900/90 border border-slate-800 text-xs">
+                  <div class="flex justify-between items-center mb-1">
+                    <span class="font-bold text-amber-100">${"★".repeat(h.star)} ${h.name}</span>
+                    <span class="text-[10px] ${hpPct < 50 ? "text-red-400 font-bold" : "text-emerald-300"}">HP ${h.hp}/${h.maxHp}</span>
+                  </div>
+                  <div class="w-full h-1.5 bg-slate-950 rounded-full overflow-hidden">
+                    <div class="h-full ${hpPct < 50 ? "bg-red-500" : "bg-emerald-500"}" style="width:${hpPct}%"></div>
+                  </div>
+                </div>
+              `;
+            }).join("");
+
+        this.renderLogs();
+      },
+
+      renderCastleTab() {
+        const box = document.getElementById("hero-list");
+        if (State.heroes.length === 0) {
+          box.innerHTML = `<div class="col-span-2 card rounded-xl p-6 text-center text-slate-400">보유한 영웅이 없습니다. [주점 &amp; 방문객] 탭에서 새로운 용사를 영입하세요!</div>`;
+          return;
+        }
+
+        box.innerHTML = State.heroes.map(h => {
+          const hpPct = Math.round((h.hp / h.maxHp) * 100);
+          const healCost = Math.max(15, Math.ceil((h.maxHp - h.hp) * 0.35));
+          const giftCost = 40 * h.star;
+          return `
+            <div class="card rounded-xl p-3.5 flex flex-col justify-between gap-2.5 ${h.inParty ? "border-amber-500/60" : ""}">
+              <div>
+                <div class="flex justify-between items-start gap-2 mb-1.5">
+                  <div>
+                    <span class="px-1.5 py-0.5 rounded border text-[10px] font-bold ${STAR_COLORS[h.star]}">${"★".repeat(h.star)} ${h.star}성</span>
+                    <span class="px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 text-[10px] ml-1">${h.role}</span>
+                    <div class="font-serif-kr font-bold text-base text-amber-100 mt-1">${h.name} <span class="text-xs text-sky-300 font-sans">Lv.${h.level}</span></div>
+                  </div>
+                  <button onclick="Game.toggleParty(${h.id})" class="${h.inParty ? "btn-gold" : "btn-iron"} px-2.5 py-1 rounded-lg text-[11px]">
+                    ${h.inParty ? "✅ 파티 참여중" : "+ 파티 편성"}
+                  </button>
+                </div>
+
+                <div class="grid grid-cols-3 gap-1.5 text-[11px] bg-slate-950/80 border border-slate-800 rounded-lg p-2 mb-2">
+                  <div>⚔️ 공격: <strong class="text-amber-200">${h.atk}</strong></div>
+                  <div>🛡️ 방어: <strong class="text-sky-200">${h.def}</strong></div>
+                  <div>❤️ 호감: <strong class="${h.affection <= 30 ? "text-red-400" : "text-pink-300"}">${h.affection}</strong></div>
+                </div>
+
+                <div class="text-[11px] flex justify-between mb-0.5">
+                  <span class="text-slate-400">체력</span>
+                  <span class="${hpPct < 50 ? "text-red-400 font-bold" : "text-emerald-300"}">${h.hp} / ${h.maxHp} (${hpPct}%)</span>
+                </div>
+                <div class="w-full h-2 bg-slate-950 rounded-full overflow-hidden mb-1">
+                  <div class="h-full ${hpPct < 50 ? "bg-red-500" : "bg-emerald-500"}" style="width:${hpPct}%"></div>
+                </div>
+              </div>
+
+              <div class="flex gap-1.5 pt-2 border-t border-slate-800 text-xs">
+                <button onclick="Game.healHero(${h.id})" ${h.hp >= h.maxHp ? "disabled" : ""} class="btn-emerald flex-1 py-1.5 rounded-lg text-[11px]">
+                  💚 치료 (${healCost}G)
+                </button>
+                <button onclick="Game.giftHero(${h.id})" class="btn-iron flex-1 py-1.5 rounded-lg text-[11px]">
+                  🍷 연회/선물 (${giftCost}G)
+                </button>
+              </div>
+            </div>
+          `;
+        }).join("");
+      },
+
+      renderHuntTab() {
+        const maxUnlockedIdx = Math.min(49, State.highestClearedIdx + 1);
+        const maxUnlockedStage = Math.floor(maxUnlockedIdx / 5) + 1;
+
+        document.getElementById("stage-selector").innerHTML = STAGES.map(st => {
+          const locked = st.stage > maxUnlockedStage;
+          const active = State.selectedStage === st.stage;
+          return `
+            <button onclick="State.selectedStage=${st.stage};UI.renderHuntTab()" ${locked ? "disabled" : ""}
+              class="${active ? "btn-gold" : "btn-iron"} px-2 py-2 rounded-lg text-left text-[11px]">
+              <div class="font-bold">Stage ${st.stage}</div>
+              <div class="truncate opacity-90">${locked ? "🔒 미개방" : st.name}</div>
+            </button>
+          `;
+        }).join("");
+
+        const st = STAGES[State.selectedStage - 1];
+        let html = "";
+        for (let sub = 1; sub <= 5; sub++) {
+          const idx = (st.stage - 1) * 5 + (sub - 1);
+          const locked = idx > maxUnlockedIdx;
+          const cleared = idx <= State.highestClearedIdx;
+          const isFrontier = idx === maxUnlockedIdx;
+          const rewardGold = 45 + idx * 26;
+          const rewardFame = 5 + Math.floor(idx / 2);
+
+          html += `
+            <div class="card rounded-xl p-3.5 flex flex-wrap items-center justify-between gap-2 ${locked ? "opacity-45" : ""} ${isFrontier ? "border-amber-500/60" : ""}">
+              <div>
+                <div class="flex items-center gap-2">
+                  <span class="px-2 py-0.5 rounded text-[10px] font-bold ${cleared ? "bg-emerald-950 text-emerald-300 border border-emerald-600/40" : (isFrontier ? "bg-amber-500/20 text-amber-300" : "bg-slate-800 text-slate-400")}">
+                    ${cleared ? "✅ 개척 완료" : (isFrontier ? "🔥 최전선" : "🔒 잠김")}
+                  </span>
+                  <strong class="font-serif-kr text-base text-amber-100">${st.stage}-${sub} ${st.name} ${sub === 5 ? "(보스 구역)" : ""}</strong>
+                </div>
+                <div class="text-xs text-slate-400 mt-1">
+                  출현 몬스터: ${st.monsters.join(", ")} · 기본 보상: <span class="text-yellow-300">${rewardGold}G</span>, <span class="text-emerald-300">명성 +${rewardFame}</span>
+                  ${!cleared && !locked ? `<span class="text-amber-300 font-bold ml-1">(최초 개척 보너스!)</span>` : ""}
+                </div>
+              </div>
+              <button onclick="Battle.startHunt(${idx})" ${locked ? "disabled" : ""} class="${isFrontier ? "btn-gold" : "btn-iron"} px-4 py-2 rounded-lg text-xs">
+                ⚔️ 자동 전투 출격
+              </button>
+            </div>
+          `;
+        }
+        document.getElementById("substage-list").innerHTML = html;
+      },
+
+      renderTavernTab() {
+        document.getElementById("fame-tier-hint").textContent = `현재 명성: ${State.fame} (45+ 3성↑ · 120+ 4성↑ · 250+ 5성 방문)`;
+
+        const vBox = document.getElementById("visitor-list");
+        if (State.visitors.length === 0) {
+          vBox.innerHTML = `<div class="col-span-2 text-xs text-slate-500 py-2">오늘은 성문을 두드린 영웅이 없습니다. 명성을 올리고 다음 날을 기다려 보세요.</div>`;
+        } else {
+          vBox.innerHTML = State.visitors.map((v, i) => `
+            <div class="bg-slate-950/90 border border-emerald-500/40 rounded-lg p-3 flex justify-between items-center gap-2">
+              <div>
+                <span class="px-1.5 py-0.5 rounded border text-[10px] font-bold ${STAR_COLORS[v.star]}">${"★".repeat(v.star)} ${v.star}성</span>
+                <span class="text-[11px] text-slate-400 ml-1">${v.tpl.role}</span>
+                <div class="font-bold text-amber-100 text-sm mt-0.5">${v.tpl.name}</div>
+                <div class="text-[11px] text-slate-400">HP ${v.tpl.hp} · 공격 ${v.tpl.atk} · 방어 ${v.tpl.def}</div>
+              </div>
+              <button onclick="Game.acceptVisitor(${i})" ${v.recruited ? "disabled" : ""} class="btn-emerald px-3 py-1.5 rounded-lg text-xs">
+                ${v.recruited ? "합류 완료" : (v.signingBonus > 0 ? `영입 (${v.signingBonus}G)` : "무료 영입")}
+              </button>
+            </div>
+          `).join("");
+        }
+
+        document.getElementById("tavern-list").innerHTML = State.tavernPool.map((item, i) => `
+          <div class="bg-slate-950/90 border border-slate-800 rounded-lg p-3 flex flex-col justify-between gap-2">
+            <div>
+              <span class="px-1.5 py-0.5 rounded border text-[10px] font-bold ${STAR_COLORS[item.star]}">${"★".repeat(item.star)} ${item.star}성</span>
+              <span class="text-[11px] text-slate-400 ml-1">${item.tpl.role}</span>
+              <div class="font-bold text-amber-100 text-sm mt-1">${item.tpl.name}</div>
+              <div class="text-[11px] text-slate-400 mt-0.5">HP ${item.tpl.hp} · 공격 ${item.tpl.atk} · 방어 ${item.tpl.def}</div>
+            </div>
+            <button onclick="Game.buyTavernHero(${i})" ${item.bought ? "disabled" : ""} class="btn-gold w-full py-1.5 rounded-lg text-xs">
+              ${item.bought ? "고용 완료" : `구입 (${item.cost}G)`}
+            </button>
+          </div>
+        `).join("");
+      },
+
+      renderMemorialTab() {
+        const box = document.getElementById("memorial-list");
+        if (State.fallenHeroes.length === 0) {
+          box.innerHTML = `<div class="col-span-2 card rounded-xl p-6 text-center text-slate-500">아직 전사한 영웅이 없습니다. 영웅들의 목숨을 끝까지 지켜내세요.</div>`;
+          return;
+        }
+        box.innerHTML = State.fallenHeroes.map(f => `
+          <div class="card rounded-xl p-3.5 border-slate-700/80 bg-slate-950/80">
+            <div class="flex justify-between items-center mb-1">
+              <span class="font-serif-kr font-bold text-slate-200">🪦 ${"★".repeat(f.star)} ${f.name}</span>
+              <span class="text-[11px] text-slate-500">${f.day}일차 전사</span>
+            </div>
+            <div class="text-xs text-slate-400">${f.role} · Lv.${f.level} · <span class="text-red-400">${f.cause}</span></div>
+          </div>
+        `).join("");
+      },
+
+      renderLogs() {
+        document.getElementById("chronicle-log").innerHTML = State.logs.map(l => {
+          const cls = l.type === "danger"
+            ? "bg-red-950/60 border-red-500/40 text-red-200"
+            : l.type === "gold"
+              ? "bg-amber-950/50 border-amber-500/40 text-amber-200"
+              : l.type === "emerald"
+                ? "bg-emerald-950/50 border-emerald-500/40 text-emerald-200"
+                : l.type === "warn"
+                  ? "bg-orange-950/50 border-orange-500/40 text-orange-200"
+                  : "bg-slate-900/70 border-slate-800 text-slate-300";
+          return `<div class="p-2 rounded-lg border ${cls} leading-relaxed"><span class="font-bold opacity-80 mr-1">[${l.day}일]</span>${l.msg}</div>`;
+        }).join("");
+      }
+    };
+
+    document.querySelectorAll(".nav-tab").forEach(btn => {
+      btn.addEventListener("click", () => UI.switchTab(btn.dataset.tab));
+    });
+
+    window.onload = () => Game.init();
+  </script>
+</body>
+</html>

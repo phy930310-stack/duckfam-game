@@ -43,6 +43,16 @@ jeongjae/index.html  정재 실험판
 
 세션에 이 저장소를 연결한 뒤, "내 폴더(`hyunyong/`)의 index.html을 고쳐서 올려 줘"라고 하면 됩니다.
 
+## 현용 실험판의 도트 전투 무대
+
+`hyunyong/` 폴더는 HTML 한 장이 아니라 파일 여러 개로 되어 있습니다.
+
+- `hyunyong/index.html` 게임 본체 (덕운 기준 버전 + 전투 무대 연결 몇 줄)
+- `hyunyong/battlefx.js` 자동 전투에서 일어난 일을 도트 이펙트로 보여 주는 코드
+- `hyunyong/pixelfx/` 도트 이펙트 라이브러리 [pixelfx](https://github.com/patch-gg/pixelfx) (MIT)의 일부를 복사한 것. 라이선스는 폴더 안 `LICENSE`, `NOTICE.md` 참고
+
+`battlefx.js`가 없어도 게임은 그대로 돌아갑니다. 파일을 직접 더블클릭해서 열면 브라우저 보안 규칙 때문에 무대만 비어 보이니, 위의 주소로 열어 주세요.
+
 ## 기준 버전에 대해
 
 지금 기준 버전은 덕운이 만든 「영주와 용사들: 영토 확장기」입니다. 세 폴더는 모두 같은 파일에서 출발합니다.

@@ -233,6 +233,11 @@
           </div>
         </div>
 
+        <!-- 도트 전투 무대 (battlefx.js가 그린다. 없어도 게임은 그대로 진행된다) -->
+        <div class="bg-slate-950/90 border border-slate-800 rounded-xl p-2 overflow-hidden">
+          <canvas id="bt-stage" width="320" height="132" style="display:block;width:100%;image-rendering:pixelated;image-rendering:crisp-edges;border-radius:8px" aria-label="전투 장면"></canvas>
+        </div>
+
         <!-- 전장 양측 유닛 -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="space-y-2">
@@ -794,6 +799,7 @@
         }
         document.getElementById("bt-title").textContent = title;
 
+        window.BattleFX?.begin({ mode: this.mode, allies: party.map(h => ({ id: h.id, role: h.role, star: h.star, hp: h.hp, maxHp: h.maxHp })), enemies: enemies.map(e => ({ id: e.id, name: e.name, isBoss: e.isBoss, hp: e.hp, maxHp: e.maxHp })) });
         this.renderBattle();
         this.scheduleTick();
       },
@@ -839,6 +845,7 @@
               const healAmt = Math.round(h.atk * 1.15);
               injured.hp = Math.min(injured.maxHp, injured.hp + healAmt);
               healIds.add("a_" + injured.id);
+              window.BattleFX?.emit({ type: "heal", from: "a_" + h.id, to: "a_" + injured.id, amt: healAmt, hp: injured.hp });
               this.pushLog(`💚 ${h.name}의 치유 → ${injured.name} HP +${healAmt}`);
               continue;
             }
@@ -850,6 +857,7 @@
           const dmg = Math.max(1, Math.round(raw - target.def * 0.45));
           target.hp = Math.max(0, target.hp - dmg);
           hitIds.add(target.id);
+          window.BattleFX?.emit({ type: "atk", role: h.role, from: "a_" + h.id, to: target.id, dmg, crit: isCrit, hp: target.hp, kill: target.hp <= 0 });
           this.pushLog(`⚔️ ${h.name}의 공격 → ${target.name}에게 ${dmg} 피해${isCrit ? " (치명타!)" : ""}`);
         }
 
@@ -869,6 +877,7 @@
           const dmg = Math.max(1, Math.round(raw - target.def * 0.55));
           target.hp = Math.max(0, target.hp - dmg);
           hitIds.add("a_" + target.id);
+          window.BattleFX?.emit({ type: "eatk", from: e.id, to: "a_" + target.id, dmg, hp: target.hp, kill: target.hp <= 0 });
           this.pushLog(`🩸 ${e.name}의 공격 → ${target.name}에게 ${dmg} 피해!`);
 
           // 영구 사망 판정!
@@ -878,6 +887,7 @@
         }
 
         this.round += 1;
+        window.BattleFX?.flush(this.speed === 1 ? 620 : 280);
         this.renderBattle(hitIds, healIds);
 
         if (this.enemies.every(e => e.hp <= 0)) {
@@ -973,6 +983,7 @@
               h.atk = Math.round(h.atk * 1.14);
               h.def = Math.round(h.def * 1.12);
               this.pushLog(`⬆️ [레벨업!] ${h.name}이(가) Lv.${h.level}로 성장했습니다!`);
+              window.BattleFX?.emit({ type: "levelup", to: "a_" + h.id });
             }
           });
 
@@ -991,11 +1002,14 @@
           }
         }
 
+        window.BattleFX?.flush(900);
+        window.BattleFX?.end(victory);
         this.renderBattle();
         UI.renderHeaderAndSidebar();
       },
 
       closeBattle() {
+        window.BattleFX?.stop();
         document.getElementById("battle-view").classList.add("hidden");
         document.getElementById("btn-next-day").disabled = false;
         UI.switchTab(State.activeTab);
@@ -1293,5 +1307,6 @@
 
     window.onload = () => Game.init();
   </script>
+  <script type="module" src="battlefx.js"></script>
 </body>
 </html>
